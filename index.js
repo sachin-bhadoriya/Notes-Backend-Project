@@ -2,6 +2,8 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const fs = require("fs");
+// import { unlink } from 'node:fs';
+// const unlink = require("fs")
 
 app.set("view engine", "ejs");
 app.use(express.json());
@@ -42,6 +44,16 @@ app.get('/read/:filename', function (req, res) {
         });
     });
 });
+
+
+app.delete('/delete/:filename', function (req, res) {
+    fs.unlink(`./files/${req.params.filename}`, (err) => {
+        if (err) throw err;
+        console.log(`${req.params.filename} was deleted`);
+        res.sendStatus(200);
+      }); 
+});
+
 
 
 app.listen(3000);

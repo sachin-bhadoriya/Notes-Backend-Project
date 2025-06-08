@@ -15,27 +15,28 @@
             <form action="/create" method="post" id="noteForm">
                 <div class="mb-3">
                     <label for="noteName" class="form-label">Note Name</label>
-                    <input type="text" class="form-control outline-dark" id="noteName"
-                           name="fileName" placeholder="Note Name">
+                    <input type="text" class="form-control outline-dark" id="noteName" name="fileName"
+                        placeholder="Note Name">
                 </div>
                 <div class="mb-3">
                     <label for="noteTitle" class="form-label">Note Title</label>
-                    <input type="text" class="form-control outline-none" id="noteTitle"
-                           name="noteTitle" placeholder="Note Title">
+                    <input type="text" class="form-control outline-none" id="noteTitle" name="noteTitle"
+                        placeholder="Note Title">
                 </div>
                 <div class="mb-3">
                     <label for="noteDesc" class="form-label">Description</label>
-                    <textarea class="form-control outline-none" id="noteDesc" rows="1"
-                           name="noteDesc" placeholder="Note Description"></textarea>
+                    <textarea class="form-control outline-none" id="noteDesc" rows="1" name="noteDesc"
+                        placeholder="Note Description"></textarea>
                 </div>
-            
+
                 <button class="btn btn-primary d-flex align-items-center gap-2" type="submit" id="submitBtn" disabled>
                     <span id="btnText">Create Tasks</span>
-                    <span id="loader" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                    <span id="loader" class="spinner-border spinner-border-sm d-none" role="status"
+                        aria-hidden="true"></span>
                 </button>
             </form>
 
-            
+
 
         </div>
     </div>
@@ -47,10 +48,33 @@
                     <div class="col-md-4 mt-4 ">
                         <div class="card" style="width: 100%;">
                             <div class="card-body">
-                                <h5 class="card-title">
-                                    <%= val %>
-                                </h5>
-                                <a href="/read/<%= val %>" class="card-link text-decoration-none">Read more</a>
+                                <p class="card-title text-center" style="color: rgb(47, 47, 47);"><span
+                                        style="color: black;"> File Name : </span>
+                                    <span class=" fs-3">
+                                        <%= val %>
+                                    </span>
+                                </p>
+                                <div class="container" style="display: flex; justify-content: space-around;">
+                                    <a href="/read/<%= val %>" class="btn btn-success">Read more</a> 
+                                    <button onclick="deleteFile('<%= val %>')" class="btn btn-danger liveToastBtn deleteBtn"
+                                        style="cursor: pointer;" id="deleteBtn">Delete</button>
+                                </div>
+
+                                <div id="toast-<%= val %>" class="toast-container position-fixed bottom-0 end-0 p-3">
+                                    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                                        <div class="toast-header">
+                                            <strong class="me-auto">Deleted: <%= val %></strong>
+                                            <button type="button" class="btn-close" data-bs-dismiss="toast"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="toast-body">
+                                            <%= val %> deleted successfully!
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
                             </div>
                         </div>
                     </div>
@@ -63,6 +87,44 @@
         </div>
     </div>
 
+    <!-- Toast Button -->
+
+    <!-- Toast Container -->
+    <!-- 
+
+    <script>
+        const toastTrigger = document.getElementById('liveToastBtn');
+        const toastTriggerClass = document.querySelectorAll('.liveToastBtn');
+        console.log(toastTriggerClass)
+        const toastLive = document.getElementById('liveToast');
+
+        if (toastTrigger) {
+            toastTrigger.addEventListener('click', () => {
+                const toast = new bootstrap.Toast(toastLive);
+                toast.show();
+            });
+        }
+        if (toastTriggerClass) {
+            toastTriggerClass.addEventListener('click', () => {
+                //   const toast = new bootstrap.Toast(toastLive);
+                //   toast.show();
+                console.log("ok pressed");
+
+            });
+        }
+    </script> -->
+
+
+
+
+
+
+
+    <script>
+        const files = <% - JSON.stringify(files) %>;
+    </script>
+
+
     <script>
         const noteName = document.getElementById("noteName");
         const noteTitle = document.getElementById("noteTitle");
@@ -70,31 +132,58 @@
         const submitBtn = document.getElementById("submitBtn");
         const loader = document.getElementById("loader");
         const btnText = document.getElementById("btnText");
+        const deleteBtns = document.querySelectorAll(".deleteBtn");
+        // console.log(deleteBtns)
         const form = document.getElementById("noteForm");
-    
+        const toastElement = document.getElementById(`unitoast`);
+
+        function deleteFile(filename) {
+            fetch(`/delete/${filename}`, {
+                method: "DELETE",
+            })
+                .then((res) => {
+                    if (res.ok) {
+                        const toastElement = document.getElementById(`toast-${filename}`);
+                        if (toastElement) {
+                            const toast = new bootstrap.Toast(toastElement.querySelector(".toast"));
+                            toast.show();
+                        }
+
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1500);
+                    } else {
+                        alert("Failed to delete the file");
+                    }
+                });
+        }
+
+
+
         function validateForm() {
             const isValid = noteName.value.trim() !== "" &&
-                            noteTitle.value.trim() !== "" &&
-                            noteDesc.value.trim() !== "";
-    
+                noteTitle.value.trim() !== "" &&
+                noteDesc.value.trim() !== "";
+
             submitBtn.disabled = !isValid;
         }
-    
-        // Listen for input changes
+
         [noteName, noteTitle, noteDesc].forEach(input => {
             input.addEventListener("input", validateForm);
         });
-    
-        // Loader on submit
+
         form.addEventListener("submit", () => {
             submitBtn.disabled = true;
             loader.classList.remove("d-none");
             btnText.textContent = "Creating...";
         });
-    
-        validateForm(); // initial validation
+
+        validateForm(); 
     </script>
-    
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 
 </html>
