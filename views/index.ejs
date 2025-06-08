@@ -12,24 +12,31 @@
 <body class="">
     <div class="container mt-5">
         <div class="form">
-            <form action="/create" method="post">
+            <form action="/create" method="post" id="noteForm">
                 <div class="mb-3">
-                    <label for="exampleFormControlInput1" class="form-label">Note Name</label>
-                    <input type="text" class="form-control outline-dark" id="exampleFormControlInput1"
-                       name="fileName" placeholder="Note Name">
+                    <label for="noteName" class="form-label">Note Name</label>
+                    <input type="text" class="form-control outline-dark" id="noteName"
+                           name="fileName" placeholder="Note Name">
                 </div>
                 <div class="mb-3">
-                    <label for="exampleFormControlInput1" class="form-label">Notel Tittle</label>
-                    <input type="text" class="form-control outline-none" id="exampleFormControlInput1"
-                       name="noteTitle" placeholder="Note Tittle">
+                    <label for="noteTitle" class="form-label">Note Title</label>
+                    <input type="text" class="form-control outline-none" id="noteTitle"
+                           name="noteTitle" placeholder="Note Title">
                 </div>
                 <div class="mb-3">
-                    <label for="exampleFormControlTextarea1" class="form-label">Description</label>
-                    <textarea class="form-control outline-none" id="exampleFormControlTextarea1" rows="1"
-                       name="noteDesc" placeholder="Note Description"></textarea>
+                    <label for="noteDesc" class="form-label">Description</label>
+                    <textarea class="form-control outline-none" id="noteDesc" rows="1"
+                           name="noteDesc" placeholder="Note Description"></textarea>
                 </div>
-                <button class="btn btn-primary" type="submit" value="Create task">Create Tasks</button>
+            
+                <button class="btn btn-primary d-flex align-items-center gap-2" type="submit" id="submitBtn" disabled>
+                    <span id="btnText">Create Tasks</span>
+                    <span id="loader" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                </button>
             </form>
+
+            
+
         </div>
     </div>
 
@@ -40,20 +47,54 @@
                     <div class="col-md-4 mt-4 ">
                         <div class="card" style="width: 100%;">
                             <div class="card-body">
-                                <h5 class="card-title"><%= val %></h5>
+                                <h5 class="card-title">
+                                    <%= val %>
+                                </h5>
                                 <a href="/read/<%= val %>" class="card-link text-decoration-none">Read more</a>
                             </div>
                         </div>
                     </div>
-                <% }) %>
-            <% } else { %>
-                <h4 class="my-4">No Task Available...</h4>
-            <% } %>
-                            
-                           
+                    <% }) %>
+                        <% } else { %>
+                            <h4 class="my-4">No Task Available...</h4>
+                            <% } %>
+
+
         </div>
     </div>
 
+    <script>
+        const noteName = document.getElementById("noteName");
+        const noteTitle = document.getElementById("noteTitle");
+        const noteDesc = document.getElementById("noteDesc");
+        const submitBtn = document.getElementById("submitBtn");
+        const loader = document.getElementById("loader");
+        const btnText = document.getElementById("btnText");
+        const form = document.getElementById("noteForm");
+    
+        function validateForm() {
+            const isValid = noteName.value.trim() !== "" &&
+                            noteTitle.value.trim() !== "" &&
+                            noteDesc.value.trim() !== "";
+    
+            submitBtn.disabled = !isValid;
+        }
+    
+        // Listen for input changes
+        [noteName, noteTitle, noteDesc].forEach(input => {
+            input.addEventListener("input", validateForm);
+        });
+    
+        // Loader on submit
+        form.addEventListener("submit", () => {
+            submitBtn.disabled = true;
+            loader.classList.remove("d-none");
+            btnText.textContent = "Creating...";
+        });
+    
+        validateForm(); // initial validation
+    </script>
+    
 </body>
 
 </html>
